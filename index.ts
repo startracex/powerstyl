@@ -72,8 +72,8 @@ function getStyleObjectFromString(stylestring: string): StyleObject {
   const stylessplit = nocomments.split(";");
   const style: StyleObject = {};
   for (let i = stylessplit.length - 1; i >= 0; i--) {
-    const key = stylessplit[i].split(":")[0];
-    const val = stylessplit[i].split(":")[1];
+    const key = stylessplit[i].split(":")[0]?.trim();
+    const val = stylessplit[i].split(":")[1]?.trim();
     if (key && val) {
       const keysplit = key.split("-");
       keysplit.map((v, i) => {
