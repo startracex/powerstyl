@@ -5,11 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --watch",
     "wp": "webpack"
   },
   "keywords": [],
-  "author": "startracex",
+  "author": "startrace",
   "license": "MIT",
   "dependencies": {
     "@lit-labs/react": "^1.2.0",

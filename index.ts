@@ -52,6 +52,10 @@ export const tagged = (strings: TemplateStringsArray, ...values: any[]) => {
 export const styled = (strings: TemplateStringsArray, ...values: any[]) => {
   return tagged`div`(strings, ...values);
 };
+export const stylobj = (strings: TemplateStringsArray, ...values: any[]) => {
+  const string = tostring(strings, ...values);
+  return getStyleObjectFromString(string);
+};
 export default styled;
 function createStyledTagged(tagname: string, stylestring: string) {
   const style = getStyleObjectFromString(stylestring);
