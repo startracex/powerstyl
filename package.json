@@ -1,13 +1,19 @@
 {
   "name": "powerstyl",
-  "version": "0.0.4",
-  "description": "",
+  "version": "0.0.5",
+  "description": "Provides CSS preprocessor and objectified template literal conversion tools",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "build": "tsc --watch"
   },
-  "keywords": [],
+  "keywords": [
+    "css",
+    "preprocessor",
+    "template literal",
+    "objectified",
+    "css-in-js"
+  ],
   "author": "startrace",
   "license": "MIT",
   "dependencies": {
@@ -19,7 +25,6 @@
   "devDependencies": {
     "@types/less": "^3.0.3",
     "@types/react": "^18.2.8",
-    "@types/stylus": "^0.48.38",
-    "typescritp": "^1.0.0"
+    "@types/stylus": "^0.48.38"
   }
 }
