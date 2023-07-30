@@ -1,7 +1,5 @@
 node_modules
 .gitignore
 /.vscode
-/build
 **/*.ts
 !**/*.d.ts
-/*config.js

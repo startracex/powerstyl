@@ -52,11 +52,16 @@ export const tagged = (strings: TemplateStringsArray, ...values: any[]) => {
 export const styled = (strings: TemplateStringsArray, ...values: any[]) => {
   return tagged`div`(strings, ...values);
 };
+export default styled;
+/**
+ * <ReactElement style={stylobj`color:red;`}></ReactElement>
+ * <ReactElement style={css`color:red;`}></ReactElement>
+ */
 export const stylobj = (strings: TemplateStringsArray, ...values: any[]) => {
   const string = tostring(strings, ...values);
   return getStyleObjectFromString(string);
 };
-export default styled;
+export const css = stylobj;
 function createStyledTagged(tagname: string, stylestring: string) {
   const style = getStyleObjectFromString(stylestring);
   return (props: any) => {
