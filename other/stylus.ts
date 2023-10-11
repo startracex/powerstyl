@@ -1,6 +1,9 @@
 import tostring from "../tostring.js";
 import stylusmodule from "stylus";
-export const stylus = (text: TemplateStringsArray, ...values: any[]) => {
+export const stylus = (
+  text: TemplateStringsArray,
+  ...values: any[]
+): string => {
   return styluso({})(text, ...values);
 };
 export const styluso = (option: stylusmodule.RenderOptions) => {

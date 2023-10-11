@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import tostring from "./tostring.js";
 /**
  * JSX:
@@ -68,7 +68,7 @@ function createStyledTagged(tagname: string, stylestring: string) {
     const element = React.createElement(tagname, { style }, props.children);
     return element;
   };
-};
+}
 function createStyledInlined(stylestring: string) {
   const style = getStyleObjectFromString(stylestring);
   return (props: any) => {
@@ -76,10 +76,15 @@ function createStyledInlined(stylestring: string) {
     return element;
   };
 }
-function getStyleObjectFromString(stylestring: string): StyleObject {
-  const nocomments = stylestring.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '');
+function getStyleObjectFromString(stylestring: string): CSSProperties {
+  const nocomments = stylestring.replace(
+    /\/\*[\s\S]*?\*\/|(?:[^:]|^)\/\/.*$/gm,
+    ""
+  );
   const stylessplit = nocomments.split(";");
-  const style: StyleObject = {};
+  const style: {
+    [key: string]: string;
+  } = {};
   for (let i = stylessplit.length - 1; i >= 0; i--) {
     const key = stylessplit[i].split(":")[0]?.trim();
     const val = stylessplit[i].split(":")[1]?.trim();
@@ -93,8 +98,9 @@ function getStyleObjectFromString(stylestring: string): StyleObject {
       style[keysplit.join("")] = val;
     }
   }
-  return Object.keys(style).length ? style : {
-    "display": "contents"
-  };
+  return Object.keys(style).length
+    ? style
+    : {
+        display: "contents",
+      };
 }
-type StyleObject = { [key: string]: string; };

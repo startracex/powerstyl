@@ -1,6 +1,9 @@
 import tostring from "../tostring.js";
 import lessmodule from "less";
-export const less = async (text: TemplateStringsArray, ...values: any[]) => {
+export const less = async (
+  text: TemplateStringsArray,
+  ...values: any[]
+): Promise<string> => {
   return await lesso({})(text, ...values);
 };
 export const lesso = (option: Less.Options) => {
