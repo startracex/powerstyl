@@ -1,7 +1,7 @@
 {
   "name": "powerstyl",
   "version": "0.0.6",
-  "description": "Provides CSS preprocessor and objectified template literal conversion tools",
+  "description": "Style with template strings",
   "main": "index.js",
   "type": "module",
   "scripts": {
