@@ -2,89 +2,92 @@
 
 ## Introduction
 
-Allows you to parse template literals (template strings) using CSS preprocessors and HTML tags to parse sources directly to CSS
+Convert template string to css properties for `style`
+
+```jsx
+import { css } from "powersty";
+<ReactElement style={css`
+  // CSS text
+`} />
+```
+
+Apply styles to a React element or child element via a template string
+
+```jsx
+import powerstyl from "powersty";
+
+const FlexContainer = powerstyl`
+  display:flex
+`;
+
+<FlexContainer>...</FlexContainer>;
+
+// <div style="display:flex">
+//   ...
+// </div>
+```
+
+<details>
 
 ```js
-import less from "powersty/other/less"
-import sass from "powersty/other/sass"
-import stylus from "powersty/other/stylus"
+import { styled, tagged, inlined } from "powersty";
+```
+
+<div style="color:red; ">styled</div>
+
+```jsx
+const Red = styled`
+  color: red; 
+`;
+<Red>styled</Red>;
+/* <div style="color:red;">styled</div> */
+```
+
+<div style="color:blue; ">tagged</div>
+
+```jsx
+const Blue = tagged`div``
+  color: blue; 
+`;
+<Blue>tagged</Blue>;
+/* <div style="color:blue;">tagged</div> */
+```
+
+<div style="color:green; ">inlined</div>
+
+```jsx
+const Green = inlined`
+  color: green; 
+`;
+<Green>
+  <div>text</div>
+</Green>;
+/* <div style="color:green;">inlined</div> */
+```
+
+</details>
+
+Works with CSS preprocessors
+
+```js
+import less from "powersty/less";
+import sass from "powersty/sass";
+
 const lessStyle = less`
-  @color: #FFFFFF;
-  header {
-    color: @color;
-    h1{
-      background-color: @color;
-    }
-  }
+// ... less code
 `;
 const sassStyle = sass`
 // ... sass code
 `;
-const stylusStyle = stylus`
-// ... stylus code
+```
+
+With options
+
+```js
+const lessStyle = less(options)`
+// ... less code
 `;
-```
-
-Allows you to apply styles to a react element or child element via a template string
-
-```jsx
-import { styled, tagged, inlined } from "powersty";
-/* <div style="color:red;">text</div> */
-const Red = styled`
-  color: red; 
-`; 
-<Red>text</Red>; 
-
-/* <h1 style="color:blue;">text</h1> */
-const Blue = tagged`h1``
-  color: blue; 
-`; 
-<Blue>text</Blue>; 
-
-/* <span style="color:green;">text</span> */
-const Green = inlined`
-  color: green; 
+const sassStyle = sass(options)`
+// ... sass code
 `;
-<Green><span>text</span></Green>; 
-```
-
-Add extended custom elements of style
-
-```html
-<style-css>
-    p {
-    color: red;
-    }
-</style-css>
-<p>red</p>
-```
-
-in react
-
-```jsx
-import { StyleCss } from "powerstyl/react";
-<StyleCss>
-  {`
-    p {
-      color: red;
-    }
-  `}
-</StyleCss>
-<p>red</p>
-```
-
-Next.js - NOSSR
-
-```jsx
-import { StyleCss } from "powerstyl/react"; 
-const NoSSR_StyleCSS = dynamic(() => import('powerstyl/react'), { ssr: false }); 
-
-<NoSSR_StyleCSS>
-  {`
-    p {
-      color: red;
-    }
-  `}
-</NoSSR_StyleCSS>
-<p>red</p>
 ```
