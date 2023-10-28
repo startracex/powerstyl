@@ -4,6 +4,9 @@
     "**/*.js": {
       "when": "$(basename).ts"
     },
+    "**/*.map": {
+      "when": "$(basename)"
+    },
     "**/*.d.ts": {
       "when": "$(basename).ts"
     },
