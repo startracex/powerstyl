@@ -1,5 +1,0 @@
-node_modules
-.gitignore
-/.vscode
-**/*.ts
-!**/*.d.ts
