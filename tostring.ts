@@ -1,5 +1,7 @@
-export function tostring(strings: TemplateStringsArray, ...values: any[]): string {
+export type TemplateStringFunc<T> = (strings: TemplateStringsArray, ...values: any[]) => T;
+
+export function toString(strings: TemplateStringsArray, ...values: any[]): string {
   return strings.reduce((prev, cur, index) => prev + cur + (values[index] || ""), "");
 }
 
-export default tostring;
+export default toString;
