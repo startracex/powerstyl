@@ -1,6 +1,6 @@
 {
   "name": "powerstyl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Style with template strings",
   "main": "index.js",
   "type": "module",
@@ -12,7 +12,7 @@
     "css-in-js",
     "template literal"
   ],
-  "author": "startrace",
+  "author": "startracex",
   "license": "MIT",
   "dependencies": {
     "less": "^4.2.0",
