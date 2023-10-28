@@ -6,8 +6,6 @@ export function SetDefaultTagName(a: string) {
   defaultTagName = a;
 }
 
-
-
 /**
  * JSX:
  * ```jsx
@@ -27,6 +25,7 @@ export const inlined: TemplateStringFunc<StylerComponent> = (strings: TemplateSt
   const string = toString(strings, ...values);
   return createInlined(string);
 };
+
 /**
  * JSX:
  * ```js
@@ -45,6 +44,7 @@ export const tagged: TemplateStringFunc<TemplateStringFunc<StylerComponent>> = (
     return createTagged(tagName, string);
   };
 };
+
 /**
  * styled = {@link tagged}\`h1\` \
  * JSX:
