@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React, { type CSSProperties } from "react";
 
 export type StylerComponent = (props: any) => React.ReactElement<{
   style: React.CSSProperties;
