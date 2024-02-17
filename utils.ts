@@ -19,25 +19,16 @@ export function createInlined(cssText: string): StylerComponent {
 }
 
 export function toCSSProperties(cssText: string): CSSProperties {
-  const noComments = cssText.replace(
-    /\/\*[\s\S]*?\*\/|(?:[^:]|^)\/\/.*$/gm,
-    ""
-  );
+  const noComments = cssText.replace(/\/\*[\s\S]*?\*\/|(?:[^:]|^)\/\/.*$/gm, "");
   const styleRules = noComments.split(";");
-  const style: {
-    [key: string]: string;
-  } = {};
-  for (let i = styleRules.length - 1; i >= 0; i--) {
-    const key = styleRules[i].split(":")[0]?.trim();
-    const val = styleRules[i].split(":")[1]?.trim();
+  const style = {} as any;
+  for (let rule of styleRules) {
+    const [key, val] = rule.split(":").map((part) => part.trim());
     if (key && val) {
-      const keySplit = key.split("-");
-      keySplit.map((v, i) => {
-        if (i > 0) {
-          keySplit[i] = v[0].toUpperCase() + v.slice(1);
-        }
-      });
-      style[keySplit.join("")] = val;
+      const formattedKey = key.replace(/-([a-z])/g, (_, letter) =>
+        letter.toUpperCase()
+      );
+      style[formattedKey] = val;
     }
   }
   return Object.keys(style).length
