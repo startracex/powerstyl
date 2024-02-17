@@ -1,10 +1,10 @@
-import toString, { TemplateStringFunc } from "../tostring.js";
+import toString, { TemplateStringFunction } from "../tostring.js";
 import * as sassModule from "sass";
 
 function sass(strings: TemplateStringsArray, ...values: any[]): string;
-function sass(object: sassModule.Options<"sync">): TemplateStringFunc<string>;
+function sass(object: sassModule.Options<"sync">): TemplateStringFunction<string>;
 
-function sass(stringsOrObject: TemplateStringsArray | sassModule.Options<"sync">, ...values: any[]): string | TemplateStringFunc<string> {
+function sass(stringsOrObject: TemplateStringsArray | sassModule.Options<"sync">, ...values: any[]): string | TemplateStringFunction<string> {
   if (Array.isArray(stringsOrObject)) {
     const string = toString(stringsOrObject as TemplateStringsArray, values);
     return sasso(string, {});

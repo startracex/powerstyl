@@ -1,4 +1,4 @@
-import toString, { TemplateStringFunc } from "./tostring.js";
+import toString, { TemplateStringFunction } from "./tostring.js";
 import { createInlined, createTagged, toCSSProperties, type StylerComponent } from "./utils.js";
 
 let defaultTagName = "div";
@@ -21,7 +21,7 @@ export function SetDefaultTagName(a: string) {
  * <Red><h1>text</h1><del>excess</del></Red>
  * ```
  */
-export const inlined: TemplateStringFunc<StylerComponent> = (strings: TemplateStringsArray, ...values: any[]) => {
+export const inlined: TemplateStringFunction<StylerComponent> = (strings: TemplateStringsArray, ...values: any[]) => {
   const string = toString(strings, ...values);
   return createInlined(string);
 };
@@ -37,7 +37,7 @@ export const inlined: TemplateStringFunc<StylerComponent> = (strings: TemplateSt
  * <h1 style="color:red;">text</h1>
  * ```
  */
-export const tagged: TemplateStringFunc<TemplateStringFunc<StylerComponent>> = (strings: TemplateStringsArray, ...values: any[]) => {
+export const tagged: TemplateStringFunction<TemplateStringFunction<StylerComponent>> = (strings: TemplateStringsArray, ...values: any[]) => {
   const tagName = toString(strings, ...values);
   return (strings: TemplateStringsArray, ...values: any[]) => {
     const string = toString(strings, ...values);
@@ -57,7 +57,7 @@ export const tagged: TemplateStringFunc<TemplateStringFunc<StylerComponent>> = (
  * <h1 style="color:red;">text</h1>
  * ```
  */
-export const styled: TemplateStringFunc<StylerComponent> = (strings: TemplateStringsArray, ...values: any[]) => {
+export const styled: TemplateStringFunction<StylerComponent> = (strings: TemplateStringsArray, ...values: any[]) => {
   return tagged`${defaultTagName}`(strings, ...values);
 };
 
@@ -65,7 +65,7 @@ export const styled: TemplateStringFunc<StylerComponent> = (strings: TemplateStr
  * <ReactElement style={stylobj`color:red;`}></ReactElement>
  * <ReactElement style={css`color:red;`}></ReactElement>
  */
-export const css: TemplateStringFunc<React.CSSProperties> = (strings: TemplateStringsArray, ...values: any[]) => {
+export const css: TemplateStringFunction<React.CSSProperties> = (strings: TemplateStringsArray, ...values: any[]) => {
   const string = toString(strings, ...values);
   return toCSSProperties(string);
 };

@@ -1,10 +1,10 @@
-import toString, { TemplateStringFunc } from "../tostring.js";
+import toString, { TemplateStringFunction } from "../tostring.js";
 import lessModule from "less";
 
 function less(strings: TemplateStringsArray, ...values: any[]): string;
-function less(object: Less.Options,): TemplateStringFunc<string>;
+function less(object: Less.Options,): TemplateStringFunction<string>;
 
-function less(stringsOrObject: TemplateStringsArray | Less.Options, ...values: any[]): string | TemplateStringFunc<string> {
+function less(stringsOrObject: TemplateStringsArray | Less.Options, ...values: any[]): string | TemplateStringFunction<string> {
   if (Array.isArray(stringsOrObject)) {
     const string = toString(stringsOrObject as TemplateStringsArray, values);
     return lesso(string, {});
