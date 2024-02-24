@@ -5,12 +5,18 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc --watch"
+    "build": "tsc"
   },
   "keywords": [
     "css",
     "css-in-js",
-    "template literal"
+    "react",
+    "style",
+    "template string",
+    "template strings",
+    "template literal",
+    "sass",
+    "less"
   ],
   "author": "startracex",
   "license": "MIT",
