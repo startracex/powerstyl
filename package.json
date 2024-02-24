@@ -1,6 +1,6 @@
 {
   "name": "powerstyl",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Style with template strings",
   "main": "index.js",
   "type": "module",
