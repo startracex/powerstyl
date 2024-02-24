@@ -1,73 +1,75 @@
 # powerstly
 
-## Introduction
+Style with template strings.
 
-Convert template string to css properties for `style`
+```sh
+npm i powerstyl
+```
+
+Convert a CSS string to an object.
 
 ```jsx
 import { css } from "powersty";
-<ReactElement style={css`
-  // CSS text
-`} />
+<ReactElement
+  style={css`
+    // CSS text
+  `}
+/>;
 ```
 
-Apply styles to a React element or child element via a template string
+Apply a style to a react element.
 
 ```jsx
 import powerstyl from "powersty";
 
-const FlexContainer = powerstyl`
-  display:flex
+const FlexContainer = powerstyl`main``
+  display:flex;
 `;
 
 <FlexContainer>...</FlexContainer>;
 
-// <div style="display:flex">
-//   ...
-// </div>
+/* 
+<main style="display:flex">
+  ...
+</main>
+ */
 ```
-
-<details>
 
 ```js
-import { styled, tagged, inlined } from "powersty";
+import { styled, inlined } from "powersty";
 ```
 
-<div style="color:red; ">styled</div>
+`styled` accepts an element name and its CSS.
 
 ```jsx
 const Red = styled`
   color: red; 
 `;
-<Red>styled</Red>;
-/* <div style="color:red;">styled</div> */
+
+<Red>text</Red>;
+
+/* 
+  <div style="color:red;">text</div>
+ */
 ```
 
-<div style="color:blue; ">tagged</div>
-
-```jsx
-const Blue = tagged`div``
-  color: blue; 
-`;
-<Blue>tagged</Blue>;
-/* <div style="color:blue;">tagged</div> */
-```
-
-<div style="color:green; ">inlined</div>
+`inlined` applies a style to the child element.
 
 ```jsx
 const Green = inlined`
   color: green; 
 `;
+
 <Green>
   <div>text</div>
 </Green>;
-/* <div style="color:green;">inlined</div> */
+
+/* 
+  <div style="color:green;">text</div>
+ */
 ```
 
-</details>
-
-Works with CSS preprocessors
+With CSS preprocessors (sync).
 
 ```js
 import less from "powersty/less";
@@ -81,7 +83,7 @@ const sassStyle = sass`
 `;
 ```
 
-With options
+With options.
 
 ```js
 const lessStyle = less(options)`
