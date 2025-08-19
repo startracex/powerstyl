@@ -6,6 +6,13 @@
   "scripts": {
     "build": "rollup -c"
   },
+  "devDependencies": {
+    "@types/stylis": "^4.2.7",
+    "stylis": "^4.3.6"
+  },
+  "peerDependencies": {
+    "stylis": "^4.3.6"
+  },
   "keywords": [
     "powerstyl",
     "css",

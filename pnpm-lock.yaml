@@ -6,4 +6,25 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@types/stylis':
+        specifier: ^4.2.7
+        version: 4.2.7
+      stylis:
+        specifier: ^4.3.6
+        version: 4.3.6
+
+packages:
+
+  '@types/stylis@4.2.7':
+    resolution: {integrity: sha512-VgDNokpBoKF+wrdvhAAfS55OMQpL6QRglwTwNC3kIgBrzZxA4WsFj+2eLfEA/uMUDzBcEhYmjSbwQakn/i3ajA==}
+
+  stylis@4.3.6:
+    resolution: {integrity: sha512-yQ3rwFWRfwNUY7H5vpU0wfdkNSnvnJinhF9830Swlaxl03zsOjCfmX0ugac+3LtK0lYSgwL/KXc8oYL3mG4YFQ==}
+
+snapshots:
+
+  '@types/stylis@4.2.7': {}
+
+  stylis@4.3.6: {}
