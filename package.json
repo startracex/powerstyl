@@ -1,0 +1,22 @@
+{
+  "name": "powerstyl",
+  "description": "A way to style elements in vanilla JavaScript",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "keywords": [
+    "powerstyl",
+    "css",
+    "css-in-js",
+    "styled"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/startracex/powerstyl.git"
+  },
+  "author": "startracex",
+  "license": "MIT",
+  "packageManager": "pnpm@10.14.0"
+}
