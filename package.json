@@ -7,12 +7,33 @@
     "build": "rollup -c"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "@types/stylis": "^4.2.7",
+    "rollup": "^4.46.3",
+    "rollup-plugin-oxc": "^0.6.1",
     "stylis": "^4.3.6"
   },
   "peerDependencies": {
     "stylis": "^4.3.6"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./*.js": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js",
+      "require": "./dist/*.cjs"
+    },
+    "./package.json": "./package.json",
+    "./src/*": "./src/*"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "keywords": [
     "powerstyl",
     "css",
