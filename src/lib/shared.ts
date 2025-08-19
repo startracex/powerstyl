@@ -5,12 +5,12 @@ export const isFunction = (value: any): value is Function => typeof value === "f
 
 export const isClass = (value: any): value is new (...args: any[]) => any => isFunction(value) && value.prototype?.constructor === value;
 
-export interface ElementConstructor<T extends HTMLElement = HTMLElement, A extends any[] = any[]> {
+export interface Constructor<T, A extends any[] = any[]> {
   new (...args: A): T;
 }
 
 export const createElement = <T extends HTMLElement = HTMLElement, A extends any[] = any[], K extends string = string>(
-  Tag: K | ElementConstructor<T, A> | ((...args: A) => T)
+  Tag: K | Constructor<T, A> | ((...args: A) => T)
 ): ((...args: A) => K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : T) => {
   if (isClass(Tag)) {
     return (...args: any[]) => new Tag(...(args as A)) as any;

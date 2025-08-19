@@ -1,4 +1,4 @@
-import { createElement, type ElementConstructor, isFunction, withSelector, _host, _scope, joinParts } from "./lib/shared.ts";
+import { createElement, type Constructor, isFunction, withSelector, _host, _scope, joinParts } from "./lib/shared.ts";
 import { AdoptedManager, getManager, GlobalManager, ScopedManager } from "./lib/manager.ts";
 import transformer from "./lib/transformer.ts";
 import applyType from "./lib/type-enum.ts";
@@ -73,7 +73,7 @@ export const styled = <
   D = NamedElement<N, E>,
   P = TypeOrReturnType<(element: D) => string | number>
 >(
-  Tag: N | ElementConstructor<E, A> | ((...args: A) => E),
+  Tag: N | Constructor<E, A> | ((...args: A) => E),
   options: ApplyStyleOptions & {
     globalEffect?: (hash: string, element: HTMLElement) => string;
   } = {}
