@@ -4,8 +4,8 @@ import { globSync } from "node:fs";
 
 export default {
   input: Object.fromEntries(globSync("src/**/*.ts").map((path) => [path.slice(4, -3), path])),
-  external: ["stylis"],
-  plugins: [oxc({ minify: true })],
+  external: ["unnestcss"],
+  plugins: [oxc()],
   output: [
     {
       dir: "dist",

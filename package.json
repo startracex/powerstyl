@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
-    "rollup": "^4.46.3",
+    "rollup": "^4.46.4",
     "rollup-plugin-oxc": "^0.6.1"
   },
   "exports": {
