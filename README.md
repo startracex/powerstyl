@@ -160,7 +160,7 @@ Styles applied within a shadow root.
 
 ```js
 const MyComponent = styled("element-with-shadow-root", { type: "adopted" })`
-  /* root styles */
+  /* host styles */
   &:hover {
     /* hover styles */
   }
