@@ -1,8 +1,11 @@
-import { createElement, type Constructor, isFunction, withSelector, _host, _scope, joinParts } from "./lib/shared.ts";
+import { createElement, type Constructor, isFunction, withSelector, joinParts } from "./lib/shared.ts";
 import { AdoptedManager, getManager, GlobalManager, ScopedManager } from "./lib/manager.ts";
 import transformer from "./lib/transformer.ts";
 import applyType from "./lib/type-enum.ts";
 import hash from "./lib/hash.ts";
+
+const _host = "host";
+const _scope = "scope";
 
 const styledMap = new WeakMap<HTMLElement, () => void>();
 
