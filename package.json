@@ -6,15 +6,13 @@
   "scripts": {
     "build": "rollup -c"
   },
+  "dependencies": {
+    "unnestcss": "^1.0.0"
+  },
   "devDependencies": {
     "@types/node": "^24.3.0",
-    "@types/stylis": "^4.2.7",
     "rollup": "^4.46.3",
-    "rollup-plugin-oxc": "^0.6.1",
-    "stylis": "^4.3.6"
-  },
-  "peerDependencies": {
-    "stylis": "^4.3.6"
+    "rollup-plugin-oxc": "^0.6.1"
   },
   "exports": {
     ".": {
