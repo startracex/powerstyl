@@ -7,22 +7,20 @@ settings:
 importers:
 
   .:
+    dependencies:
+      unnestcss:
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@types/node':
         specifier: ^24.3.0
         version: 24.3.0
-      '@types/stylis':
-        specifier: ^4.2.7
-        version: 4.2.7
       rollup:
         specifier: ^4.46.3
         version: 4.46.3
       rollup-plugin-oxc:
         specifier: ^0.6.1
         version: 0.6.1(rollup@4.46.3)
-      stylis:
-        specifier: ^4.3.6
-        version: 4.3.6
 
 packages:
 
@@ -460,9 +458,6 @@ packages:
   '@types/node@24.3.0':
     resolution: {integrity: sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==}
 
-  '@types/stylis@4.2.7':
-    resolution: {integrity: sha512-VgDNokpBoKF+wrdvhAAfS55OMQpL6QRglwTwNC3kIgBrzZxA4WsFj+2eLfEA/uMUDzBcEhYmjSbwQakn/i3ajA==}
-
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
 
@@ -499,9 +494,6 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  stylis@4.3.6:
-    resolution: {integrity: sha512-yQ3rwFWRfwNUY7H5vpU0wfdkNSnvnJinhF9830Swlaxl03zsOjCfmX0ugac+3LtK0lYSgwL/KXc8oYL3mG4YFQ==}
-
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
@@ -520,6 +512,9 @@ packages:
 
   undici-types@7.10.0:
     resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
+
+  unnestcss@1.0.0:
+    resolution: {integrity: sha512-Dx8tuR40WFsXTn9nbJMF3mq73TAmLqZFCzbmOWaHVYGr5uRGMO2y8/1qEhEIgyoTta983ShRYmjO/a9PVdWWeg==}
 
 snapshots:
 
@@ -778,8 +773,6 @@ snapshots:
     dependencies:
       undici-types: 7.10.0
 
-  '@types/stylis@4.2.7': {}
-
   estree-walker@2.0.2: {}
 
   fsevents@2.3.3:
@@ -887,8 +880,6 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.46.3
       fsevents: 2.3.3
 
-  stylis@4.3.6: {}
-
   tsconfck@3.1.6: {}
 
   tsconfig-migrate@0.0.0: {}
@@ -897,3 +888,5 @@ snapshots:
     optional: true
 
   undici-types@7.10.0: {}
+
+  unnestcss@1.0.0: {}

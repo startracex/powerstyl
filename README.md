@@ -5,7 +5,7 @@ A way to style elements in vanilla JavaScript.
 ## Installation
 
 ```bash
-npm install powerstyl stylis
+npm install powerstyl
 ```
 
 ## Getting Started
