@@ -1,6 +1,3 @@
-export const _host = "host";
-export const _scope = "scope";
-
 export const isFunction = (value: any): value is Function => typeof value === "function";
 
 export const isClass = (value: any): value is new (...args: any[]) => any => isFunction(value) && value.prototype?.constructor === value;
