@@ -37,7 +37,6 @@ button.addEventListener("click", () => {
   count++;
   updateStyle(button);
 });
-
 document.body.appendChild(button);
 ```
 
