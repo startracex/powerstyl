@@ -10,6 +10,15 @@ npm install powerstyl
 
 ## Getting Started
 
+Powerstyl mainly exports two things: `styled` and `updateStyle`.
+
+`styled` is used to create an element creator.
+
+`updateStyle` is used to update the style of the element created by the creator.
+It should be placed where the state is updated.
+
+If the parameters of `styled` do not contain functions, calling `updateStyle` on the created element will do nothing.
+
 ```js
 import { styled, updateStyle } from "powerstyl";
 ```
@@ -39,6 +48,74 @@ button.addEventListener("click", () => {
 });
 document.body.appendChild(button);
 ```
+
+<details>
+<summary>Result</summary>
+
+First updated:
+
+```html
+<head>
+  <style>
+    [data-ps="4606c706"] {
+      font-size: 1em;
+      padding: 0.2em 0.5em;
+      border-radius: 0.2em;
+      color: black;
+      border: none;
+      cursor: pointer;
+      background-color: rgb(150, 240, 20);
+      font-size: 1.2em;
+    }
+    [data-ps="4606c706"]:hover {
+      background-color: rgb(150, 230, 0);
+    }
+  </style>
+</head>
+<body>
+  <button data-ps="4606c706">Click me</button>
+</body>
+```
+
+After clicked:
+
+```html
+<head>
+  <style>
+    [data-ps="4606c706"] {
+      font-size: 1em;
+      padding: 0.2em 0.5em;
+      border-radius: 0.2em;
+      color: black;
+      border: none;
+      cursor: pointer;
+      background-color: rgb(150, 240, 20);
+      font-size: 1.2em;
+    }
+    [data-ps="4606c706"]:hover {
+      background-color: rgb(150, 230, 0);
+    }
+    [data-ps="f99b399b"] {
+      font-size: 1em;
+      padding: 0.2em 0.5em;
+      border-radius: 0.2em;
+      color: black;
+      border: none;
+      cursor: pointer;
+      background-color: rgb(10 240 220);
+      font-size: 1.2em;
+    }
+    [data-ps="f99b399b"]:hover {
+      background-color: rgb(10 230 200);
+    }
+  </style>
+</head>
+<body>
+  <button data-ps="f99b399b">Click me</button>
+</body>
+```
+
+</details>
 
 ## API Reference
 
