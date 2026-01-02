@@ -34,7 +34,7 @@ const Button = styled("button")`
   cursor: pointer;
   ${() => `background-color: ${count % 2 ? "rgb(10 240 220)" : "rgb(150, 240, 20)"};`}
   ${() => `&:hover {
-    background-color: ${count % 2 ? "rgb(10 230 200);" : "rgb(150, 230, 0)"};
+    background-color: ${count % 2 ? "rgb(10 230 200)" : "rgb(150, 230, 0)"};
   }`};
 `;
 const ButtonLg = styled(Button)`
@@ -124,22 +124,19 @@ After clicked:
 Create a function to create styled elements.
 
 ```js
-styled(Tag, { type, manager, transform, selector, globalEffect });
+styled(tag, { type, manager });
 ```
 
 #### Parameters
 
-- `Tag`: An element tag name, custom element constructor, or function returns a element instance
+- `tag`: An element tag name, custom element constructor, or function returns a element instance.
 - `options`
-  - `type`: Style application type (`'global'` (default), `'scoped'`, `'adopted'` or `'inline'`)
-  - `manager`: Style manager
-  - `transform`: CSS transformation
-  - `selector`: Enforced CSS selector
-  - `globalEffect`: Global effect
+  - `type`: Style application type (`'global'`, `'scoped'`, `'adopted'` or `'inline'`).
+  - `manager`: Style manager, used to update DOM and application styles.
 
 ### `updateStyle`
 
-Updates the style of an element created by `styled`.
+Updates the style of an element **created by** `styled`.
 
 ```js
 updateStyle(element);

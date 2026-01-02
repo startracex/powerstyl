@@ -1,4 +1,11 @@
-import applyType from "./type-enum.ts";
+import hash from "./hash.ts";
+
+export const managerTypes = {
+  inline: "inline",
+  scoped: "scoped",
+  global: "global",
+  adopted: "adopted",
+} as const;
 
 const createStyleElement = () => document.createElement("style");
 
@@ -43,16 +50,37 @@ export class GlobalManager extends MicrotaskScheduler {
     this.cache = new Map();
   }
 
-  set(key: string, css: string): void {
+  protected set(key: string, css: string): void {
     this.cache.set(key, css);
     this.scheduleUpdate();
   }
 
-  delete(key: string): void {
+  protected delete(key: string): void {
     if (!this.cache.delete(key)) {
       return;
     }
     this.scheduleUpdate();
+  }
+
+  hash(str: string): string {
+    return hash(str).toString(16).padStart(8, "0");
+  }
+
+  prepare(cssText: string, element?: HTMLElement): { css: string; applyOptions: false | { key: string } } {
+    const key = this.hash(cssText);
+    const selector = `[data-ps="${key}"]`;
+    const css = `${selector}{${cssText}}`;
+    let applyOptions: boolean | { key: string };
+    element.dataset.ps = key;
+    if (this.cache.has(key)) {
+      applyOptions = false;
+    } else {
+      applyOptions = { key };
+    }
+    return {
+      css,
+      applyOptions,
+    };
   }
 
   applyStyle(css: string, { key = css }: { key?: string } = {}): void {
@@ -62,14 +90,14 @@ export class GlobalManager extends MicrotaskScheduler {
     this.set(key, css);
   }
 
-  update(): void {
-    this.style.textContent = [...this.cache.values()].join("");
-  }
-
   clear(): void {
     this.cancelPendingUpdate();
     this.style.textContent = "";
     this.cache.clear();
+  }
+
+  update(): void {
+    this.style.textContent = [...this.cache.values()].join("");
   }
 }
 
@@ -82,6 +110,14 @@ export class AdoptedManager extends MicrotaskScheduler {
   constructor(container: HTMLElement) {
     super();
     this.container = container;
+  }
+
+  prepare(cssText: string, element?: HTMLElement): { css: string; applyOptions?: false | {} } {
+    const css = `:host{${cssText}}`;
+    return {
+      css,
+      applyOptions: this.current === css ? false : {},
+    };
   }
 
   applyStyle(css: string, { index }: { index?: number } = {}): void {
@@ -134,7 +170,15 @@ export class ScopedManager extends MicrotaskScheduler {
     this.container.insertBefore(this.style, this.container.firstChild);
   }
 
-  applyStyle(css: string): void {
+  prepare(cssText: string, element?: HTMLElement): { css: string; applyOptions?: false | {} } {
+    const css = `@scope{:scope{${cssText}}}`;
+    return {
+      css,
+      applyOptions: this.current === css ? false : {},
+    };
+  }
+
+  applyStyle(css: string, _?: any): void {
     if (this.current === css) {
       return;
     }
@@ -152,20 +196,3 @@ export class ScopedManager extends MicrotaskScheduler {
     this.style.textContent = this.current;
   }
 }
-
-let globalManager: GlobalManager;
-export const getManager = (
-  element: HTMLElement,
-  options: {
-    type?: (typeof applyType)[keyof typeof applyType];
-  }
-): ScopedManager | GlobalManager | AdoptedManager | undefined => {
-  switch (options.type) {
-    case applyType.scoped:
-      return new ScopedManager(element);
-    case applyType.global:
-      return (globalManager ??= new GlobalManager(document.head));
-    case applyType.adopted:
-      return new AdoptedManager(element);
-  }
-};
