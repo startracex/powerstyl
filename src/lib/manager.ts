@@ -40,7 +40,7 @@ abstract class MicrotaskScheduler {
 export class GlobalManager extends MicrotaskScheduler {
   container: HTMLElement;
   style: HTMLStyleElement;
-  cache: Map<string, string>;
+  cache: Map<string, { css: string; refCount: number }>;
 
   constructor(container: HTMLElement) {
     super();
@@ -50,16 +50,26 @@ export class GlobalManager extends MicrotaskScheduler {
     this.cache = new Map();
   }
 
-  protected set(key: string, css: string): void {
-    this.cache.set(key, css);
-    this.scheduleUpdate();
+  set(key: string, css: string): void {
+    const existValue = this.cache.get(key);
+    if (existValue) {
+      existValue.refCount++;
+    } else {
+      this.cache.set(key, { css, refCount: 1 });
+      this.scheduleUpdate();
+    }
   }
 
-  protected delete(key: string): void {
-    if (!this.cache.delete(key)) {
+  delete(key: string): void {
+    const existValue = this.cache.get(key);
+    if (!existValue) {
       return;
     }
-    this.scheduleUpdate();
+    existValue.refCount--;
+    if (existValue.refCount === 0) {
+      this.cache.delete(key);
+      this.scheduleUpdate();
+    }
   }
 
   hash(str: string): string {
@@ -97,7 +107,7 @@ export class GlobalManager extends MicrotaskScheduler {
   }
 
   update(): void {
-    this.style.textContent = [...this.cache.values()].join("");
+    this.style.textContent = [...this.cache.values().map((v) => v.css)].join("");
   }
 }
 
