@@ -7,11 +7,11 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "unnestcss": "^1.1.0"
+    "unnestcss": "^1.2.1"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "rollup": "^4.47.1",
+    "@types/node": "^25.0.3",
+    "rollup": "^4.54.0",
     "rollup-plugin-oxc": "^0.7.0"
   },
   "exports": {
@@ -44,5 +44,5 @@
   },
   "author": "startracex",
   "license": "MIT",
-  "packageManager": "pnpm@10.15.0"
+  "packageManager": "pnpm@10.27.0"
 }
