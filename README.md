@@ -146,20 +146,6 @@ updateStyle(element);
 
 - `element`: The element whose style needs to be updated which created by `styled` function
 
-### `applyStyle`
-
-Applies style to an element.
-
-```js
-applyStyle(element, cssText, options);
-```
-
-#### Parameters
-
-- `element`: The element to apply style to
-- `cssText`: CSS text content
-- `options`: See [`styled`](#styled)'s `options`
-
 ## Style Application Types
 
 ### Global
