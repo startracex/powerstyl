@@ -12,6 +12,7 @@ export interface StyledFn<Args extends any[], Return, Tag, Values> {
 export interface StyledMetadata<Tag, Values> {
   tag: Tag;
   extends: { strings: TemplateStringsArray; values: Values }[];
+  isStatic: boolean;
 }
 
 export type StyledPartValue<T> = string | number | ((this: T, element: T) => string | number);
@@ -45,6 +46,7 @@ const metadataSymbol: unique symbol = Symbol();
 const getMetadata = (tag: any): StyledMetadata<any, any[]> => {
   const tagMetadata = isFunction(tag) ? tag[metadataSymbol] || {} : {};
   return {
+    isStatic: tagMetadata.isStatic || false,
     tag: tagMetadata.tag ?? tag,
     extends: tagMetadata.extends || [],
   };
@@ -82,21 +84,17 @@ export class Powerstyl {
       const tagMetadata: StyledMetadata<typeof tag, StyledPartValue<NamedElement<N, E>>[]> = getMetadata(tag);
       const finalTag = tagMetadata.tag;
       const finalExtends = [...tagMetadata.extends, { strings, values }];
+      const isStatic = tagMetadata.isStatic && !values.some(isFunction);
 
       const styledFn: StyledFn<A, NamedElement<N, E>, typeof tag, StyledPartValue<NamedElement<N, E>>[]> = (...args: A) => {
         const element = this.createElement(finalTag, args);
         options.type ??= element.shadowRoot ? managerTypes.adopted : managerTypes.scoped;
         options.manager ??= this.getManager(element, options.type);
 
-        const hasFunction = finalExtends.some(({ values }) => values.some((v) => isFunction(v)));
-        const partValueToString = hasFunction
-          ? (value: StyledPartValue<NamedElement<N, E>>): string => {
-              if (isFunction(value)) {
-                return "" + value.call(element, element);
-              }
-              return "" + value;
-            }
-          : String;
+        const partValueToString = isStatic
+          ? String
+          : (value: StyledPartValue<NamedElement<N, E>>): string => String(isFunction(value) ? value.call(element, element) : value);
+
         const templateObjectToString = ({ strings, values }) => joinParts(strings, values, partValueToString);
 
         const updateStyle = () => {
@@ -104,7 +102,7 @@ export class Powerstyl {
         };
         updateStyle();
 
-        if (hasFunction) {
+        if (!isStatic) {
           styledMap.set(element, updateStyle);
         }
         return element;
@@ -113,6 +111,7 @@ export class Powerstyl {
       styledFn[metadataSymbol] = {
         tag: finalTag,
         extends: finalExtends,
+        isStatic,
       };
       return styledFn;
     };
