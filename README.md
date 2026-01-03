@@ -24,7 +24,6 @@ import { styled, updateStyle } from "powerstyl";
 ```
 
 ```js
-let count = 0;
 const Button = styled("button")`
   font-size: 1em;
   padding: 0.2em 0.5em;
@@ -32,18 +31,19 @@ const Button = styled("button")`
   color: black;
   border: none;
   cursor: pointer;
-  ${() => `background-color: ${count % 2 ? "rgb(10 240 220)" : "rgb(150, 240, 20)"};`}
-  ${() => `&:hover {
-    background-color: ${count % 2 ? "rgb(10 230 200)" : "rgb(150, 230, 0)"};
-  }`};
+  background-color: ${(e) => (e.count % 2 ? "rgb(10 240 220)" : "rgb(150, 240, 20)")};
+  &:hover {
+    background-color: ${(e) => (e.count % 2 ? "rgb(10 230 200)" : "rgb(150, 230, 0)")};
+  }
 `;
 const ButtonLg = styled(Button)`
   font-size: 1.2em;
 `;
 const button = ButtonLg();
+button.count = 0;
 button.append("Click me");
 button.addEventListener("click", () => {
-  count++;
+  button.count++;
   updateStyle(button);
 });
 document.body.appendChild(button);
