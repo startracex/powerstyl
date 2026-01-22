@@ -155,10 +155,6 @@ Styles applied globally.
 ```js
 const MyComponent = styled("div", {
   type: "global",
-  globalEffect: (id, element) => {
-    element.dataset.ps = id;
-    return `[data-ps="${id}"]`;
-  },
 })`
   /* root styles */
   &:hover {
