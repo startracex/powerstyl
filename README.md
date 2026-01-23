@@ -10,21 +10,12 @@ npm install powerstyl
 
 ## Getting Started
 
-Powerstyl mainly exports two things: `styled` and `updateStyle`.
-
-`styled` is used to create an element creator.
-
-`updateStyle` is used to update the style of the element created by the creator.
-It should be placed where the state is updated.
-
-If the parameters of `styled` do not contain functions, calling `updateStyle` on the created element will do nothing.
-
 ```js
 import { styled, updateStyle } from "powerstyl";
 ```
 
 ```js
-const Button = styled("button")`
+const Button = styled("button", { type: "global" })`
   font-size: 1em;
   padding: 0.2em 0.5em;
   border-radius: 0.2em;
@@ -36,7 +27,7 @@ const Button = styled("button")`
     background-color: ${(e) => (e.count % 2 ? "rgb(10 230 200)" : "rgb(150, 230, 0)")};
   }
 `;
-const ButtonLg = styled(Button)`
+const ButtonLg = styled(Button, { type: "global" })`
   font-size: 1.2em;
 `;
 const button = ButtonLg();
@@ -138,15 +129,34 @@ styled(tag, { type, manager });
 
 Updates the style of an element **created by** `styled`.
 
+If there are no functions in the template literals, calling `updateStyle` is a no-op.
+
+It should be placed where the state is updated.
+
 ```js
 updateStyle(element);
 ```
+
+### `mixin`
+
+Combines multiple style definitions into a single component, enabling composable styles.
+
+It is useful for creating reusable atomic styles.
+
+```js
+mixin(styler0, ...stylers);
+```
+
+#### Parameters
+
+- `styler0`: The first style definition.
+- `stylers`: The rest of the style definitions.
 
 #### Parameters
 
 - `element`: The element whose style needs to be updated which created by `styled` function
 
-## Style Application Types
+## Style Application
 
 ### Global
 
@@ -211,7 +221,7 @@ MyComponent();
 
 ### Adopted
 
-Styles applied within a shadow root.
+Styles applied within a opened shadow root.
 
 ```js
 const MyComponent = styled("element-with-shadow-root", { type: "adopted" })`
@@ -245,4 +255,46 @@ MyComponent();
 
 ```html
 <div style="/* inline styles */"></div>
+```
+
+## Style Mixins
+
+```js
+import { styled, mixin } from "powerstyl";
+
+const Radius = styled()`
+  border-radius: 0.2em;
+`;
+
+const Outline = styled()`
+  outline: 1.5px solid black;
+  border: none;
+`;
+
+const PrimaryButton = styled(
+  mixin(
+    styled("button")`
+      font-size: 1.2em;
+      cursor: pointer;
+    `,
+    Radius,
+    Outline,
+  ),
+)`
+  background-color: rgb(150, 240, 20);
+`;
+
+const button = PrimaryButton();
+```
+
+```css
+font-size: 1.2em;
+cursor: pointer;
+
+border-radius: 0.2em;
+
+outline: 1.5px solid black;
+border: none;
+
+background-color: rgb(150, 240, 20);
 ```
