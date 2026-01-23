@@ -62,7 +62,7 @@ const joinParts = <T>(strings: TemplateStringsArray, values: T[], fn: (arg0: T) 
 export class Powerstyl {
   createElement<E extends HTMLElement = HTMLElement, A extends any[] = any[], N extends string = string>(
     tag: N | Constructor<E, A> | ((...args: A) => E),
-    args: A
+    args: A,
   ): NamedElement<N, E> {
     if (isFunction(tag)) {
       if (functionIsConstructor(tag)) {
@@ -74,8 +74,8 @@ export class Powerstyl {
   }
 
   styled<E extends HTMLElement = HTMLElement, A extends any[] = any[], N extends string = string>(
-    tag: N | Constructor<E, A> | ((...args: A) => E),
-    options: ApplyStyleOptions = {}
+    tag?: N | Constructor<E, A> | ((...args: A) => E),
+    options: ApplyStyleOptions = {},
   ): (
     strings: TemplateStringsArray,
     ...values: StyledPartValue<NamedElement<N, E>>[]
@@ -148,3 +148,15 @@ export class Powerstyl {
     }
   }
 }
+
+export const mixin = <T extends (...args: any[]) => any>(styler0: T, ...stylers: any[]): T => {
+  const result: any = (...a) => styler0(...a);
+  const resultMetadata = getMetadata(styler0);
+  for (const arg of stylers) {
+    const argMetadata = getMetadata(arg);
+    resultMetadata.isStatic ||= argMetadata.isStatic;
+    resultMetadata.extends.push(...argMetadata.extends);
+  }
+  result[metadataSymbol] = resultMetadata;
+  return result;
+};
