@@ -4,15 +4,23 @@
   "version": "1.3.0",
   "type": "module",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint --fix",
+    "lint:check": "oxlint"
   },
   "dependencies": {
-    "unnestcss": "^1.2.1"
+    "unnestcss": "^1.3.0"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3",
-    "rollup": "^4.54.0",
-    "rollup-plugin-oxc": "^0.7.0"
+    "@startracex/dev-config": "^0.7.0",
+    "@types/node": "^26.6.6",
+    "oxfmt": "^0.77.0",
+    "oxlint": "^1.92.0",
+    "rollup": "^4.68.0",
+    "rollup-plugin-oxc": "^0.8.0",
+    "typescript": "^7.0.2"
   },
   "exports": {
     ".": {
@@ -44,5 +52,5 @@
   },
   "author": "startracex",
   "license": "MIT",
-  "packageManager": "pnpm@10.27.0"
+  "packageManager": "pnpm@12.16.1"
 }

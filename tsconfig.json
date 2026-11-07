@@ -19,5 +19,6 @@
     "erasableSyntaxOnly": true,
     "noEmit": true,
     "isolatedDeclarations": true
-  }
+  },
+  "include": ["src/**/*.ts"]
 }
