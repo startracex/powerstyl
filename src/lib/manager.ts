@@ -7,11 +7,20 @@ export const managerTypes = {
   adopted: "adopted",
 } as const;
 
+export type StyleTransform = (css: string) => string;
+
+export interface ManagerApplyOptions {
+  transform?: StyleTransform;
+  key?: string;
+  prevKey?: string;
+  index?: number;
+}
+
 const createStyleElement = () => document.createElement("style");
 
 abstract class MicrotaskScheduler {
-  protected needsUpdate: boolean = false;
-  protected isScheduled: boolean = false;
+  protected needsUpdate = false;
+  protected isScheduled = false;
 
   abstract update(): void;
 
@@ -23,17 +32,16 @@ abstract class MicrotaskScheduler {
     this.isScheduled = true;
 
     queueMicrotask(() => {
-      if (this.needsUpdate) {
-        this.update();
-        this.needsUpdate = false;
-      }
       this.isScheduled = false;
+      if (this.needsUpdate) {
+        this.needsUpdate = false;
+        this.update();
+      }
     });
   }
 
   protected cancelPendingUpdate(): void {
     this.needsUpdate = false;
-    this.isScheduled = false;
   }
 }
 
@@ -41,6 +49,10 @@ export class GlobalManager extends MicrotaskScheduler {
   container: HTMLElement;
   style: HTMLStyleElement;
   cache: Map<string, { css: string; refCount: number }>;
+  private elementKeys = new WeakMap<HTMLElement, string>();
+  private registry = new FinalizationRegistry<string>((key) => {
+    this.delete(key);
+  });
 
   constructor(container: HTMLElement) {
     super();
@@ -48,16 +60,6 @@ export class GlobalManager extends MicrotaskScheduler {
     this.style = createStyleElement();
     this.container.appendChild(this.style);
     this.cache = new Map();
-  }
-
-  set(key: string, css: string): void {
-    const existValue = this.cache.get(key);
-    if (existValue) {
-      existValue.refCount++;
-    } else {
-      this.cache.set(key, { css, refCount: 1 });
-      this.scheduleUpdate();
-    }
   }
 
   delete(key: string): void {
@@ -76,28 +78,48 @@ export class GlobalManager extends MicrotaskScheduler {
     return hash(str).toString(16).padStart(8, "0");
   }
 
-  prepare(cssText: string, element?: HTMLElement): { css: string; applyOptions: false | { key: string } } {
+  prepare(
+    cssText: string,
+    element: HTMLElement,
+  ): { css: string; applyOptions: false | { key: string; prevKey?: string } } {
     const key = this.hash(cssText);
-    const selector = `[data-ps="${key}"]`;
-    const css = `${selector}{${cssText}}`;
-    let applyOptions: boolean | { key: string };
-    element.dataset.ps = key;
-    if (this.cache.has(key)) {
-      applyOptions = false;
-    } else {
-      applyOptions = { key };
+    const css = `[data-ps="${key}"]{${cssText}}`;
+    const prevKey = this.elementKeys.get(element);
+
+    if (prevKey === key) {
+      return { css, applyOptions: false };
     }
+
+    element.dataset.ps = key;
+    this.elementKeys.set(element, key);
+
+    if (prevKey !== undefined) {
+      this.registry.unregister(element);
+    }
+    this.registry.register(element, key, element);
+
     return {
       css,
-      applyOptions,
+      applyOptions: prevKey !== undefined ? { key, prevKey } : { key },
     };
   }
 
-  applyStyle(css: string, { key = css }: { key?: string } = {}): void {
-    if (this.cache.has(key)) {
+  applyStyle(css: string, { key, prevKey, transform }: ManagerApplyOptions = {}): void {
+    if (key === undefined) {
       return;
     }
-    this.set(key, css);
+    if (prevKey !== undefined) {
+      this.delete(prevKey);
+    }
+
+    const existValue = this.cache.get(key);
+    if (existValue) {
+      existValue.refCount++;
+      return;
+    }
+
+    this.cache.set(key, { css: transform ? transform(css) : css, refCount: 1 });
+    this.scheduleUpdate();
   }
 
   clear(): void {
@@ -107,22 +129,24 @@ export class GlobalManager extends MicrotaskScheduler {
   }
 
   update(): void {
-    this.style.textContent = [...this.cache.values().map((v) => v.css)].join("");
+    this.style.textContent = Array.from(this.cache.values(), (v) => v.css).join("");
   }
 }
 
-export class AdoptedManager extends MicrotaskScheduler {
+export class AdoptedManager {
   container: HTMLElement;
   index?: number;
   sheet?: CSSStyleSheet;
-  current: string = "";
+  current = "";
 
   constructor(container: HTMLElement) {
-    super();
+    if (!container.shadowRoot) {
+      throw new Error("AdoptedManager requires an element with an open shadow root");
+    }
     this.container = container;
   }
 
-  prepare(cssText: string, element?: HTMLElement): { css: string; applyOptions?: false | {} } {
+  prepare(cssText: string, _element?: HTMLElement): { css: string; applyOptions: false | Record<string, never> } {
     const css = `:host{${cssText}}`;
     return {
       css,
@@ -130,7 +154,7 @@ export class AdoptedManager extends MicrotaskScheduler {
     };
   }
 
-  applyStyle(css: string, { index }: { index?: number } = {}): void {
+  applyStyle(css: string, { index, transform }: ManagerApplyOptions = {}): void {
     if (this.current === css) {
       return;
     }
@@ -138,49 +162,51 @@ export class AdoptedManager extends MicrotaskScheduler {
     if (index !== undefined && this.index === undefined) {
       this.index = index;
     }
-    this.scheduleUpdate();
+    this.write(transform ? transform(css) : css);
   }
 
   clear(): void {
-    this.cancelPendingUpdate();
     this.current = "";
     if (this.sheet && this.index !== undefined) {
-      const sheets = this.container.shadowRoot.adoptedStyleSheets;
-      this.container.shadowRoot.adoptedStyleSheets = [...sheets.slice(0, this.index), ...sheets.slice(this.index + 1)];
+      const sheets = this.container.shadowRoot!.adoptedStyleSheets;
+      this.container.shadowRoot!.adoptedStyleSheets = [...sheets.slice(0, this.index), ...sheets.slice(this.index + 1)];
       this.sheet = undefined;
       this.index = undefined;
     }
   }
 
-  update(): void {
-    if (!this.current) {
+  private write(css: string): void {
+    if (!css) {
       return;
     }
     if (this.sheet) {
-      this.sheet.replaceSync(this.current);
+      this.sheet.replaceSync(css);
       return;
     }
     this.sheet = new CSSStyleSheet();
-    this.sheet.replaceSync(this.current);
-    const sheets = this.container.shadowRoot.adoptedStyleSheets;
+    this.sheet.replaceSync(css);
+    const sheets = this.container.shadowRoot!.adoptedStyleSheets;
     const finalIndex = this.index ?? sheets.length;
-    this.container.shadowRoot.adoptedStyleSheets = [...sheets.slice(0, finalIndex), this.sheet, ...sheets.slice(finalIndex)];
+    this.container.shadowRoot!.adoptedStyleSheets = [
+      ...sheets.slice(0, finalIndex),
+      this.sheet,
+      ...sheets.slice(finalIndex),
+    ];
   }
 }
 
-export class ScopedManager extends MicrotaskScheduler {
+export class ScopedManager {
   container: HTMLElement;
   style: HTMLStyleElement;
-  current: string = "";
+  current = "";
 
   constructor(container: HTMLElement) {
-    super();
     this.container = container;
     this.style = createStyleElement();
     this.container.insertBefore(this.style, this.container.firstChild);
   }
 
-  prepare(cssText: string, element?: HTMLElement): { css: string; applyOptions?: false | {} } {
+  prepare(cssText: string, _element?: HTMLElement): { css: string; applyOptions: false | Record<string, never> } {
     const css = `@scope{:scope{${cssText}}}`;
     return {
       css,
@@ -188,21 +214,16 @@ export class ScopedManager extends MicrotaskScheduler {
     };
   }
 
-  applyStyle(css: string, _?: any): void {
+  applyStyle(css: string, { transform }: ManagerApplyOptions = {}): void {
     if (this.current === css) {
       return;
     }
     this.current = css;
-    this.scheduleUpdate();
+    this.style.textContent = transform ? transform(css) : css;
   }
 
   clear(): void {
-    this.cancelPendingUpdate();
     this.style.textContent = "";
     this.current = "";
-  }
-
-  update(): void {
-    this.style.textContent = this.current;
   }
 }

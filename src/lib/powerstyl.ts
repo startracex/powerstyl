@@ -1,8 +1,6 @@
 import { AdoptedManager, GlobalManager, managerTypes, ScopedManager } from "./manager.ts";
 
-interface Constructor<T, A extends any[] = any[]> {
-  new (...args: A): T;
-}
+type Constructor<T, A extends any[] = any[]> = new (...args: A) => T;
 
 export interface StyledFn<Args extends any[], Return, Tag, Values> {
   (...args: Args): Return;
@@ -28,14 +26,24 @@ type ApplyStyleOptions =
       type?: "scoped";
       manager?: ScopedManager;
     }
-  | ({
+  | {
       type?: "adopted";
       manager?: AdoptedManager;
-    } & Parameters<AdoptedManager["applyStyle"]>[1])
-  | ({
+      index?: number;
+    }
+  | {
       type?: "global";
       manager?: GlobalManager;
-    } & Parameters<GlobalManager["applyStyle"]>[1]);
+    };
+
+const isFunction = (value: any): value is Function => typeof value === "function";
+
+const functionIsConstructor = (value: Function): value is Constructor<any> => value.prototype?.constructor === value;
+
+const joinParts = <T>(strings: TemplateStringsArray, values: T[], fn: (arg0: T) => string): string =>
+  values.length
+    ? strings.reduce((acc, cur, i) => acc + cur + (i < values.length ? fn(values[i]) || "" : ""), "")
+    : strings[0];
 
 let globalManager: GlobalManager;
 
@@ -44,20 +52,13 @@ const styledMap = new WeakMap<HTMLElement, () => void>();
 const metadataSymbol: unique symbol = Symbol();
 
 const getMetadata = (tag: any): StyledMetadata<any, any[]> => {
-  const tagMetadata = isFunction(tag) ? tag[metadataSymbol] || {} : {};
+  const tagMetadata = isFunction(tag) ? tag[metadataSymbol] : undefined;
   return {
-    isStatic: tagMetadata.isStatic || false,
-    tag: tagMetadata.tag ?? tag,
-    extends: tagMetadata.extends || [],
+    isStatic: tagMetadata?.isStatic || false,
+    tag: tagMetadata?.tag ?? tag,
+    extends: tagMetadata?.extends ? [...tagMetadata.extends] : [],
   };
 };
-
-const isFunction = (value: any): value is Function => typeof value === "function";
-
-const functionIsConstructor = (value: Function): value is Constructor<any> => value.prototype?.constructor === value;
-
-const joinParts = <T>(strings: TemplateStringsArray, values: T[], fn: (arg0: T) => string): string =>
-  values.length ? strings.reduce((acc, cur, i) => acc + cur + (i < values.length ? fn(values[i]) || "" : ""), "") : strings[0];
 
 export class Powerstyl {
   createElement<E extends HTMLElement = HTMLElement, A extends any[] = any[], N extends string = string>(
@@ -84,21 +85,38 @@ export class Powerstyl {
       const tagMetadata: StyledMetadata<typeof tag, StyledPartValue<NamedElement<N, E>>[]> = getMetadata(tag);
       const finalTag = tagMetadata.tag;
       const finalExtends = [...tagMetadata.extends, { strings, values }];
-      const isStatic = tagMetadata.isStatic && !values.some(isFunction);
+      // Base stylers (no parent extends) are static when they have no function values.
+      const isStatic = !values.some(isFunction) && (tagMetadata.extends.length === 0 || tagMetadata.isStatic);
 
-      const styledFn: StyledFn<A, NamedElement<N, E>, typeof tag, StyledPartValue<NamedElement<N, E>>[]> = (...args: A) => {
-        const element = this.createElement(finalTag, args);
-        options.type ??= element.shadowRoot ? managerTypes.adopted : managerTypes.scoped;
-        options.manager ??= this.getManager(element, options.type);
+      let staticCssText: string | undefined;
+
+      const buildCssText = (element: NamedElement<N, E>): string => {
+        if (isStatic && staticCssText !== undefined) {
+          return staticCssText;
+        }
 
         const partValueToString = isStatic
           ? String
-          : (value: StyledPartValue<NamedElement<N, E>>): string => String(isFunction(value) ? value.call(element, element) : value);
+          : (value: StyledPartValue<NamedElement<N, E>>): string =>
+              String(isFunction(value) ? value.call(element, element) : value);
 
-        const templateObjectToString = ({ strings, values }) => joinParts(strings, values, partValueToString);
+        const cssText = finalExtends
+          .map(({ strings, values }) => joinParts(strings, values, partValueToString))
+          .join("");
+        if (isStatic) {
+          staticCssText = cssText;
+        }
+        return cssText;
+      };
+
+      const styledFn = ((...args: A) => {
+        const element = this.createElement(finalTag as N | Constructor<E, A> | ((...args: A) => E), args);
+        const type = options.type ?? (element.shadowRoot ? managerTypes.adopted : managerTypes.scoped);
+        const manager = options.manager ?? this.getManager(element, type);
+        const resolvedOptions = { ...options, type, manager } as ApplyStyleOptions;
 
         const updateStyle = () => {
-          this.applyStyle(element, finalExtends.map(templateObjectToString).join(""), options);
+          this.applyStyle(element, buildCssText(element), resolvedOptions);
         };
         updateStyle();
 
@@ -106,7 +124,7 @@ export class Powerstyl {
           styledMap.set(element, updateStyle);
         }
         return element;
-      };
+      }) as StyledFn<A, NamedElement<N, E>, typeof tag, StyledPartValue<NamedElement<N, E>>[]>;
 
       styledFn[metadataSymbol] = {
         tag: finalTag,
@@ -123,9 +141,16 @@ export class Powerstyl {
       element.style.cssText = cssText;
       return;
     }
+    if (!manager) {
+      return;
+    }
     const { css, applyOptions } = manager.prepare(cssText, element);
     if (applyOptions) {
-      manager.applyStyle(this.transform(css), { ...applyOptions, ...restOptions });
+      manager.applyStyle(css, {
+        ...applyOptions,
+        ...restOptions,
+        transform: (s: string) => this.transform(s),
+      });
     }
   }
 
@@ -137,7 +162,10 @@ export class Powerstyl {
     return s;
   }
 
-  getManager(element: HTMLElement, type?: keyof typeof managerTypes): ScopedManager | GlobalManager | AdoptedManager | undefined {
+  getManager(
+    element: HTMLElement,
+    type?: keyof typeof managerTypes,
+  ): ScopedManager | GlobalManager | AdoptedManager | undefined {
     switch (type) {
       case managerTypes.scoped:
         return new ScopedManager(element);
@@ -150,11 +178,11 @@ export class Powerstyl {
 }
 
 export const mixin = <T extends (...args: any[]) => any>(styler0: T, ...stylers: any[]): T => {
-  const result: any = (...a) => styler0(...a);
+  const result: any = (...a: any[]) => styler0(...a);
   const resultMetadata = getMetadata(styler0);
   for (const arg of stylers) {
     const argMetadata = getMetadata(arg);
-    resultMetadata.isStatic ||= argMetadata.isStatic;
+    resultMetadata.isStatic &&= argMetadata.isStatic;
     resultMetadata.extends.push(...argMetadata.extends);
   }
   result[metadataSymbol] = resultMetadata;
